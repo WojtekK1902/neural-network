@@ -5,12 +5,15 @@ from neuralnetwork.Network import Network
 if __name__ == '__main__':
     neuron = Neuron()
     layer = Layer()
-    network = Network()
-    neuron.powiedzCosOSobie()
-    layer.powiedzCosOSobie()
-    network.powiedzCosOSobie()
+    
 
     f = open('configuration.data','r')
-    for line in f:
-        print line.strip()
+    line = f.readline().strip().split()
+    network = Network()
+    network.inputs = int(line[0])
+    network.outputs = int(line[len(line)-1])
+    network.hidden = len(line) - 2
+    print 'Liczba wejsc: ' + str(network.inputs)
+    print 'Liczba warstw ukrytych: ' + str(network.hidden)
+    print 'Liczba wyjsc: ' + str(network.outputs)
     f.close()
