@@ -21,6 +21,10 @@ if __name__ == '__main__':
             neuron.weights = map(float, line.strip().split())
             network.layers[-1].neurons.append(neuron)
 
+    network.layers.append(Layer()) #warstwa wyjsciowa
+    for i in range(0,network.outputs):
+        network.layers[-1].neurons.append(Neuron())
+
     for l in network.layers:
         print "Warstwa"
         for n in l.neurons:
