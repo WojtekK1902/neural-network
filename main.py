@@ -9,3 +9,8 @@ if __name__ == '__main__':
     neuron.powiedzCosOSobie()
     layer.powiedzCosOSobie()
     network.powiedzCosOSobie()
+
+    f = open('configuration.data','r')
+    for line in f:
+        print line.strip()
+    f.close()
