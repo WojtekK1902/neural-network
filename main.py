@@ -1,6 +1,25 @@
+import math
+import types
 from neuralnetwork.Neuron import Neuron
 from neuralnetwork.Layer import Layer
 from neuralnetwork.Network import Network
+
+
+def liniowa(self, x):
+    return x
+
+def progowa(self, x):
+    if x > 0:
+        return 1
+    else:
+        return 0
+
+def  sigmoida(self, x):
+    return x/(1+ math.e**(-x))
+
+
+FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
+
 
 if __name__ == '__main__':
     f = open('configuration.data','r')
@@ -18,7 +37,10 @@ if __name__ == '__main__':
             network.layers.append(Layer())
         else:
             neuron = Neuron()
-            neuron.weights = map(float, line.strip().split())
+            input = line.strip().split()
+            neuron.weights = map(float, input[:-2])
+            neuron.f = types.MethodType(FUNCTIONS[input[-2]], neuron)
+            neuron.bias = input[-1]
             network.layers[-1].neurons.append(neuron)
 
     network.layers.append(Layer()) #warstwa wyjsciowa
@@ -29,5 +51,5 @@ if __name__ == '__main__':
         print "Warstwa"
         for n in l.neurons:
             print n.weights
-    
+
     f.close()
