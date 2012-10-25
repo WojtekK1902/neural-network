@@ -39,6 +39,8 @@ if __name__ == '__main__':
     network.layers.append(layer)
     for i in range(network.inputs):
         neuron = Neuron()
+        neuron.input = layer.bias
+        neuron.f = types.MethodType(liniowa, neuron)
         neuron.weights = map(float, f.readline().strip().split())
         network.layers[-1].neurons.append(neuron)
 
@@ -51,6 +53,7 @@ if __name__ == '__main__':
         line = f.readline().strip().split()
         while line:
             neuron = Neuron()
+            neuron.input = layer.bias
             neuron.weights = map(float, line[:-1])
             neuron.f = types.MethodType(FUNCTIONS[line[-1]], neuron)
             network.layers[-1].neurons.append(neuron)
@@ -62,32 +65,36 @@ if __name__ == '__main__':
     network.layers.append(layer)
     for i in range(network.outputs):
         neuron = Neuron()
+        neuron.input = layer.bias
         neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
         network.layers[-1].neurons.append(neuron)
         
-
-##    for line in f:
-##        if not line.strip():
-##            network.layers.append(Layer())
-##        else:
-##            neuron = Neuron()
-##            input = line.strip().split()
-##            if len(network.layers) > 1:
-##                neuron.weights = map(float, input[:-2])
-##                neuron.f = types.MethodType(FUNCTIONS[input[-2]], neuron)
-##            else:
-##                neuron.weights = map(float, input[:-1])
-##            neuron.bias = input[-1]
-##            network.layers[-1].neurons.append(neuron)
-##
-##    network.layers.append(Layer()) #warstwa wyjsciowa
-##    for i in range(0,network.outputs):
-##        network.layers[-1].neurons.append(Neuron())
-
     for l in network.layers:
         print "Warstwa " + str(l.bias)
         for n in l.neurons:
             print n.weights
             print n.f
 
+    f.readline()
+    input = map(float, f.readline().strip().split())
     f.close()
+
+    print "input: " + str(input)
+
+    for x, neuron in zip(input, network.layers[0].neurons):
+        neuron.input += x
+
+    for layer_index, layer in enumerate(network.layers[:-1]):
+        for neuron in layer.neurons:
+            for index, weight in enumerate(neuron.weights):
+                network.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
+
+    for l in network.layers:
+        print "Warstwa "
+        for n in l.neurons:
+            print n.input
+
+    output = map(lambda n: n.compute_output(), network.layers[-1].neurons)
+
+    print "odpowiedz sieci: " + str(output)
+
