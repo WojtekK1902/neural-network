@@ -1,5 +1,6 @@
 import math
 import types
+import sys
 from neuralnetwork.Neuron import Neuron
 from neuralnetwork.Layer import Layer
 from neuralnetwork.Network import Network
@@ -22,7 +23,10 @@ FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
 
 
 if __name__ == '__main__':
-    f = open('configuration.data','r')
+    if len(sys.argv) < 2:
+        print "Brakuje pliku :("
+        sys.exit(1)
+    f = open(sys.argv[1],'r')
     line = f.readline().strip().split()
     network = Network()
     network.inputs = int(line[0])
@@ -69,11 +73,11 @@ if __name__ == '__main__':
         neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
         network.layers[-1].neurons.append(neuron)
         
-    for l in network.layers:
-        print "Warstwa " + str(l.bias)
-        for n in l.neurons:
-            print n.weights
-            print n.f
+##    for l in network.layers:
+##        print "Warstwa " + str(l.bias)
+##        for n in l.neurons:
+##            print n.weights
+##            print n.f
 
     f.readline()
     input = map(float, f.readline().strip().split())
