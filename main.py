@@ -64,6 +64,7 @@ if __name__ == '__main__':
             line = f.readline().strip().split()
 
     #warstwa wyjsciowa:
+    f.readline()
     layer = Layer()
     layer.bias = float(f.readline().strip())
     network.layers.append(layer)
@@ -98,7 +99,7 @@ if __name__ == '__main__':
                 network.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
 
     for l in network.layers:
-        print "Warstwa "
+        print "Warstwa " + str(l.bias)
         for n in l.neurons:
             print n.input
 
