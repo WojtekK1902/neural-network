@@ -79,10 +79,14 @@ if __name__ == '__main__':
 ##            print n.weights
 ##            print n.f
 
-    f.readline()
-    input = map(float, f.readline().strip().split())
     f.close()
 
+    input = []
+    print
+    for i in range(network.inputs):
+        input.append(float(raw_input('Input ' + str(i+1) + ': ')))
+
+    print
     print "input: " + str(input)
 
     for x, neuron in zip(input, network.layers[0].neurons):
