@@ -63,8 +63,9 @@ if __name__ == '__main__':
             network.layers[-1].neurons.append(neuron)
             line = f.readline().strip().split()
 
+    if(network.hidden == 0): #ugly hack :/
+        f.readline()
     #warstwa wyjsciowa:
-    f.readline()
     layer = Layer()
     layer.bias = float(f.readline().strip())
     network.layers.append(layer)
