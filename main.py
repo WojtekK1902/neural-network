@@ -4,6 +4,7 @@ import sys
 from neuralnetwork.Neuron import Neuron
 from neuralnetwork.Layer import Layer
 from neuralnetwork.Network import Network
+from neuralnetwork.FileFormatException import FileFormatException
 
 
 def liniowa(self, x):
@@ -23,88 +24,104 @@ FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print "Brakuje pliku :("
-        sys.exit(1)
-    f = open(sys.argv[1],'r')
-    line = f.readline().strip().split()
-    network = Network()
-    network.inputs = int(line[0])
-    network.outputs = int(line[len(line)-1])
-    network.hidden = len(line) - 2
-    print 'Liczba wejsc: ' + str(network.inputs)
-    print 'Liczba warstw ukrytych: ' + str(network.hidden)
-    print 'Liczba wyjsc: ' + str(network.outputs)
+    try:
+        if len(sys.argv) < 2:
+            print "Brakuje pliku :("
+            sys.exit(1)
+        f = open(sys.argv[1],'r')
+        line = f.readline().strip().split()
+        if len(line) < 2 or len(line) > 3:
+            raise FileFormatException(f.tell())
+        network = Network()
+        network.inputs = int(line[0])
+        network.outputs = int(line[len(line)-1])
+        network.hidden = len(line) - 2
+        print 'Liczba wejsc: ' + str(network.inputs)
+        print 'Liczba warstw ukrytych: ' + str(network.hidden)
+        print 'Liczba wyjsc: ' + str(network.outputs)
 
-    #warstwa wejsciowa:
-    f.readline()
-    layer = Layer()
-    layer.bias = float(f.readline().strip())
-    network.layers.append(layer)
-    for i in range(network.inputs):
-        neuron = Neuron()
-        neuron.input = layer.bias
-        neuron.f = types.MethodType(liniowa, neuron)
-        neuron.weights = map(float, f.readline().strip().split())
-        network.layers[-1].neurons.append(neuron)
-
-    #warstwy ukryte:
-    for i in range(network.hidden):
-        f.readline()
+        #warstwa wejsciowa:
+        l = f.readline().strip()
+        if l:
+            raise FileFormatException(f.tell())
         layer = Layer()
         layer.bias = float(f.readline().strip())
         network.layers.append(layer)
-        line = f.readline().strip().split()
-        while line:
+        for i in range(network.inputs):
             neuron = Neuron()
             neuron.input = layer.bias
-            neuron.weights = map(float, line[:-1])
-            neuron.f = types.MethodType(FUNCTIONS[line[-1]], neuron)
+            neuron.f = types.MethodType(liniowa, neuron)
+            l = f.readline().strip().split()
+            if not l:
+                raise FileFormatException(f.tell())
+            neuron.weights = map(float, l)
             network.layers[-1].neurons.append(neuron)
+
+        #warstwy ukryte:
+        for i in range(network.hidden):
+            l = f.readline().strip()
+            if l:
+                print l
+                raise FileFormatException(f.tell())
+            layer = Layer()
+            layer.bias = float(f.readline().strip())
+            network.layers.append(layer)
             line = f.readline().strip().split()
+            if not line:
+                raise FileFormatException(f.tell())
+            neurons_count = 0
+            while line:
+                neuron = Neuron()
+                neuron.input = layer.bias
+                l = line[:-1]
+                if neurons_count == 0:
+                    neurons_count = len(l)
+                if len(l) != neurons_count:
+                    raise FileFormatException(f.tell())
+                neuron.weights = map(float, l)
+                neuron.f = types.MethodType(FUNCTIONS[line[-1]], neuron)
+                network.layers[-1].neurons.append(neuron)
+                line = f.readline().strip().split()
 
-    if(network.hidden == 0): #ugly hack :/
-        f.readline()
-    #warstwa wyjsciowa:
-    layer = Layer()
-    layer.bias = float(f.readline().strip())
-    network.layers.append(layer)
-    for i in range(network.outputs):
-        neuron = Neuron()
-        neuron.input = layer.bias
-        neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
-        network.layers[-1].neurons.append(neuron)
+        if(network.hidden == 0): #ugly hack :/
+            f.readline()
+
+        #warstwa wyjsciowa:
+        layer = Layer()
+        layer.bias = float(f.readline().strip())
+        network.layers.append(layer)
+        for i in range(network.outputs):
+            neuron = Neuron()
+            neuron.input = layer.bias
+            neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
+            network.layers[-1].neurons.append(neuron)
+            
+        f.close()
+
+        input = []
+        print
+        for i in range(network.inputs):
+            input.append(float(raw_input('Input ' + str(i+1) + ': ')))
+
+        print
+        print "input: " + str(input)
+
+        for x, neuron in zip(input, network.layers[0].neurons):
+            neuron.input += x
+
+        for layer_index, layer in enumerate(network.layers[:-1]):
+            for neuron in layer.neurons:
+                for index, weight in enumerate(neuron.weights):
+                    network.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
+
+        for l in network.layers:
+            print "Warstwa " + str(l.bias)
+            for n in l.neurons:
+                print n.input
+
+        output = map(lambda n: n.compute_output(), network.layers[-1].neurons)
+
+        print "odpowiedz sieci: " + str(output)
         
-##    for l in network.layers:
-##        print "Warstwa " + str(l.bias)
-##        for n in l.neurons:
-##            print n.weights
-##            print n.f
-
-    f.close()
-
-    input = []
-    print
-    for i in range(network.inputs):
-        input.append(float(raw_input('Input ' + str(i+1) + ': ')))
-
-    print
-    print "input: " + str(input)
-
-    for x, neuron in zip(input, network.layers[0].neurons):
-        neuron.input += x
-
-    for layer_index, layer in enumerate(network.layers[:-1]):
-        for neuron in layer.neurons:
-            for index, weight in enumerate(neuron.weights):
-                network.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
-
-    for l in network.layers:
-        print "Warstwa " + str(l.bias)
-        for n in l.neurons:
-            print n.input
-
-    output = map(lambda n: n.compute_output(), network.layers[-1].neurons)
-
-    print "odpowiedz sieci: " + str(output)
-
+    except FileFormatException as e:
+        print 'Bad file format at position:', e.pos
