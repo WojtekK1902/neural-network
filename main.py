@@ -106,20 +106,7 @@ if __name__ == '__main__':
         print
         print "input: " + str(input)
 
-        for x, neuron in zip(input, network.layers[0].neurons):
-            neuron.input += x
-
-        for layer_index, layer in enumerate(network.layers[:-1]):
-            for neuron in layer.neurons:
-                for index, weight in enumerate(neuron.weights):
-                    network.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
-
-        for l in network.layers:
-            print "Warstwa " + str(l.bias)
-            for n in l.neurons:
-                print n.input
-
-        output = map(lambda n: n.compute_output(), network.layers[-1].neurons)
+        output = network.compute(input)
 
         print "odpowiedz sieci: " + str(output)
         
