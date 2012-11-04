@@ -6,17 +6,19 @@ class Network(object):
         self.layers = []
 
     def compute(self, input):
-	for x, neuron in zip(input, self.layers[0].neurons):
-		neuron.input += x
+        for x, neuron in zip(input, self.layers[0].neurons):
+            neuron.input += x
 
-	for layer_index, layer in enumerate(self.layers[:-1]):
-		for neuron in layer.neurons:
-			for index, weight in enumerate(neuron.weights):
-				self.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
+        for layer_index, layer in enumerate(self.layers[:-1]):
+            for neuron in self.layers[layer_index+1].neurons:
+                neuron.input += layer.bias
+            for neuron in layer.neurons:
+                for index, weight in enumerate(neuron.weights):
+                    self.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
 
-	for l in self.layers:
-		print "Warstwa " + str(l.bias)
-		for n in l.neurons:
-			print n.input
+        for l in self.layers:
+            print "Warstwa " + str(l.bias)
+            for n in l.neurons:
+                print n.input
 
-	return map(lambda n: n.compute_output(), self.layers[-1].neurons)
+        return map(lambda n: n.compute_output(), self.layers[-1].neurons)

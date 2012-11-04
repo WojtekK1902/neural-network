@@ -49,7 +49,6 @@ if __name__ == '__main__':
         network.layers.append(layer)
         for i in range(network.inputs):
             neuron = Neuron()
-            neuron.input = layer.bias
             neuron.f = types.MethodType(liniowa, neuron)
             l = f.readline().strip().split()
             if not l:
@@ -72,7 +71,6 @@ if __name__ == '__main__':
             neurons_count = 0
             while line:
                 neuron = Neuron()
-                neuron.input = layer.bias
                 l = line[:-1]
                 if neurons_count == 0:
                     neurons_count = len(l)
@@ -88,11 +86,9 @@ if __name__ == '__main__':
 
         #warstwa wyjsciowa:
         layer = Layer()
-        layer.bias = float(f.readline().strip())
         network.layers.append(layer)
         for i in range(network.outputs):
             neuron = Neuron()
-            neuron.input = layer.bias
             neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
             network.layers[-1].neurons.append(neuron)
             
