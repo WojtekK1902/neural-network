@@ -45,7 +45,7 @@ if __name__ == '__main__':
         if l:
             raise FileFormatException(f.tell())
         layer = Layer()
-        layer.bias = float(f.readline().strip())
+        layer.bias = (-1.0)*float(f.readline().strip())
         network.layers.append(layer)
         for i in range(network.inputs):
             neuron = Neuron()
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             if l:
                 raise FileFormatException(f.tell())
             layer = Layer()
-            layer.bias = float(f.readline().strip())
+            layer.bias = (-1.0)*float(f.readline().strip())
             network.layers.append(layer)
             line = f.readline().strip().split()
             if not line:
