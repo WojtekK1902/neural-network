@@ -60,7 +60,6 @@ if __name__ == '__main__':
         for i in range(network.hidden):
             l = f.readline().strip()
             if l:
-                print l
                 raise FileFormatException(f.tell())
             layer = Layer()
             layer.bias = float(f.readline().strip())
