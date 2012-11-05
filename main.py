@@ -17,7 +17,7 @@ def progowa(self, x):
         return 0
 
 def sigmoida(self, x):
-    return x/(1+ math.e**(-x))
+    return 1/(1+ math.e**(-x))
 
 
 FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
