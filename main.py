@@ -45,55 +45,69 @@ if __name__ == '__main__':
         l = f.readline().strip()
         if l:
             raise FileFormatException(f.tell())
-##        layer = Layer()
-##        layer.bias = (-1.0)*float(f.readline().strip())
-##        network.layers.append(layer)
-##        for i in range(network.inputs):
-##            neuron = Neuron()
-##            neuron.f = types.MethodType(liniowa, neuron)
-##            l = f.readline().strip().split()
-##            if not l:
-##                raise FileFormatException(f.tell())
-##            neuron.weights = map(float, l)
-##            network.layers[-1].neurons.append(neuron)
-##
-##        #warstwy ukryte:
-##        for i in range(network.hidden):
-##            l = f.readline().strip()
-##            if l:
-##                raise FileFormatException(f.tell())
-##            layer = Layer()
-##            layer.bias = (-1.0)*float(f.readline().strip())
-##            network.layers.append(layer)
-##            line = f.readline().strip().split()
-##            if not line:
-##                raise FileFormatException(f.tell())
-##            neurons_count = 0
-##            while line:
-##                neuron = Neuron()
-##                l = line[:-1]
-##                if neurons_count == 0:
-##                    neurons_count = len(l)
-##                if len(l) != neurons_count:
-##                    raise FileFormatException(f.tell())
-##                neuron.weights = map(float, l)
-##                neuron.f = types.MethodType(FUNCTIONS[line[-1]], neuron)
-##                network.layers[-1].neurons.append(neuron)
-##                line = f.readline().strip().split()
-##
-##        if(network.hidden == 0): #ugly hack :/
-##            f.readline()
-##
-##        #warstwa wyjsciowa:
-##        layer = Layer()
-##        network.layers.append(layer)
-##        for i in range(network.outputs):
-##            neuron = Neuron()
-##            neuron.f = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
-##            network.layers[-1].neurons.append(neuron)
-##            
-##        f.close()
-##
+        layer = Layer()
+        l = f.readline().strip().split()
+        if l[0] != 'b':
+            raise FileFormatException(f.tell())
+        layer.bias = map(lambda x: x*(-1.0), map(float, l[1:]))
+        network.layers.append(layer)
+        for i in range(network.inputs):
+            neuron = Neuron()
+            neuron.f = types.MethodType(liniowa, neuron)
+            l = f.readline().strip().split()
+            if not l:
+                raise FileFormatException(f.tell())
+            neuron.weights = map(float, l)
+            network.layers[-1].neurons.append(neuron)
+
+        #warstwy ukryte:
+        for i in range(len(network.hidden)):
+            l = f.readline().strip()
+            if l:
+                raise FileFormatException(f.tell())
+            layer = Layer()
+            l = f.readline().strip().split()
+            if l[0] != 'b' or l[-1] not in FUNCTIONS.keys():
+                raise FileFormatException(f.tell())
+            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:-1]))
+            func = types.MethodType(FUNCTIONS[l[-1]], neuron)
+            network.layers.append(layer)
+            neurons_count = 0
+            for j in range(network.hidden[i]):
+                line = f.readline().strip().split()
+                if not line:
+                    raise FileFormatException(f.tell())
+                neuron = Neuron()
+                if neurons_count == 0:
+                    neurons_count = len(line)
+                if len(line) != neurons_count:
+                    raise FileFormatException(f.tell())
+                neuron.weights = map(float, line)
+                neuron.f = func
+                network.layers[-1].neurons.append(neuron)
+
+
+        l = f.readline().strip()
+        if l:
+            raise FileFormatExcpetion(f.tell())
+
+        #warstwa wyjsciowa:
+        layer = Layer()
+        network.layers.append(layer)
+        func = types.MethodType(FUNCTIONS[f.readline().strip()], neuron)
+        for i in range(network.outputs):
+            neuron = Neuron()
+            neuron.f = func
+            network.layers[-1].neurons.append(neuron)
+            
+        f.close()
+
+        for layer in network.layers:
+            print layer.bias
+            for neuron in layer.neurons:
+                print neuron.weights
+                print neuron.f
+        
 ##        input = []
 ##        print
 ##        for i in range(network.inputs):
