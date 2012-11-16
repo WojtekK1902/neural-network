@@ -1,4 +1,6 @@
 import math
+import random
+import re
 import types
 import sys
 from neuralnetwork.Neuron import Neuron
@@ -22,6 +24,19 @@ def sigmoida(self, x):
 
 FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
 
+
+def read_weights(line):
+    weights = []
+    for weight in line:
+        try:
+            weights.append(float(weight))
+        except ValueError:
+            count = int(weight.split("[")[0])
+            lower_bound = float(weight.split("[")[1].split(":")[0])
+            upper_bound = float(weight.split(":")[1].split("]")[0])
+            for i in range(count):
+                weights.append(random.uniform(lower_bound, upper_bound))
+    return weights
 
 if __name__ == '__main__':
     try:
@@ -57,7 +72,7 @@ if __name__ == '__main__':
             l = f.readline().strip().split()
             if not l:
                 raise FileFormatException(f.tell())
-            neuron.weights = map(float, l)
+            neuron.weights = read_weights(l)
             network.layers[-1].neurons.append(neuron)
 
         #warstwy ukryte:
@@ -82,7 +97,7 @@ if __name__ == '__main__':
                     neurons_count = len(line)
                 if len(line) != neurons_count:
                     raise FileFormatException(f.tell())
-                neuron.weights = map(float, line)
+                neuron.weights = read_weights(line)
                 neuron.f = func
                 network.layers[-1].neurons.append(neuron)
 
@@ -103,11 +118,11 @@ if __name__ == '__main__':
         f.close()
 
         for layer in network.layers:
-            print layer.bias
+            print "bias: " + str(layer.bias)
             for neuron in layer.neurons:
                 print neuron.weights
-                print neuron.f
-        
+#                print neuron.f
+
 ##        input = []
 ##        print
 ##        for i in range(network.inputs):
