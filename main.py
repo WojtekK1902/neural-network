@@ -123,17 +123,17 @@ if __name__ == '__main__':
                 print neuron.weights
 #                print neuron.f
 
-##        input = []
-##        print
-##        for i in range(network.inputs):
-##            input.append(float(raw_input('Input ' + str(i+1) + ': ')))
-##
-##        print
-##        print "input: " + str(input)
-##
-##        output = network.compute(input)
-##
-##        print "odpowiedz sieci: " + str(output)
+        input = []
+        print
+        for i in range(network.inputs):
+            input.append(float(raw_input('Input ' + str(i+1) + ': ')))
+
+        print
+        print "input: " + str(input)
+
+        output = network.compute(input)
+
+        print "odpowiedz sieci: " + str(output)
         
     except FileFormatException as e:
         print 'Bad file format at position:', e.pos

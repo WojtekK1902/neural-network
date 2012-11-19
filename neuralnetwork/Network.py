@@ -10,8 +10,8 @@ class Network(object):
             neuron.input += x
 
         for layer_index, layer in enumerate(self.layers[:-1]):
-            for neuron in self.layers[layer_index+1].neurons:
-                neuron.input += layer.bias
+            for i, neuron in enumerate(self.layers[layer_index+1].neurons):
+                neuron.input += layer.bias[i]
             for neuron in layer.neurons:
                 for index, weight in enumerate(neuron.weights):
                     self.layers[layer_index + 1].neurons[index].input += weight * neuron.compute_output()
