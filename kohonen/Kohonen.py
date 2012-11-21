@@ -33,13 +33,16 @@ class Kohonen(object):
                 min_dist = dist
                 min_dist_ind = k
         return min_dist_ind
-            
 
+    #TODO: czy liczba epok nie powinna byc konfigurowalna?
     def learn(self, X, epochs=32000):
-        for e in range(epochs):
-            for pict in X:
-                k = self.winner(pict)
-                self.step(pict, k)
+        for i in range(4):
+            print 'alfa =', self.alfa
+            for e in range(epochs/4):
+                for pict in X:
+                    k = self.winner(pict)
+                    self.step(pict, k)
+            self.alfa /= 2
         self.print_network()
 
     def print_network(self):
