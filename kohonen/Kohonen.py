@@ -1,4 +1,5 @@
 import random
+import math
 
 class Kohonen(object):
     def __init__(self, width=3, height=3, outputs=4):
@@ -20,17 +21,18 @@ class Kohonen(object):
                 self.weights[k][j][i] += self.alfa*(pict[j][i]-self.weights[k][j][i])
 
     def winner(self, pict):
-        max_result = float('-infinity')
-        max_result_ind = -1
+        min_dist = float('infinity')
+        min_dist_ind = -1
         for k, w in enumerate(self.weights):
-            result = 0.0
+            s = 0.0
             for j in range(self.height):
                 for i in range(self.width):
-                    result += w[j][i] * pict[j][i]
-            if result > max_result:
-                max_result = result
-                max_result_ind = k
-        return max_result_ind
+                    s += (w[j][i] - pict[j][i])**2
+            dist = math.sqrt(s)
+            if dist < min_dist:
+                min_dist = dist
+                min_dist_ind = k
+        return min_dist_ind
             
 
     def learn(self, X, epochs=32000):
