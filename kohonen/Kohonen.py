@@ -2,17 +2,15 @@ import random
 import math
 
 class Kohonen(object):
-    def __init__(self, width=3, height=3, outputs=4):
+    def __init__(self, conf):
         #TODO: dodac bias!
-        #TODO: ewentualnie ustawianie alfa
-        self.alfa = 0.06
-        #TODO: dodac ustawianie promienia sasiedztwa
-        self.r = 1
-        self.width = width
-        self.height = height
-        self.outputs = outputs
+        self.alfa = conf.alfa
+        self.r = conf.r
+        self.width = conf.width
+        self.height = conf.height
+        self.outputs = conf.outputs
         self.freq = [1.0/self.outputs for i in range(self.outputs)]
-        self.beta = 0.1
+        self.beta = conf.beta
 
     def initialize(self):
         random.seed()
