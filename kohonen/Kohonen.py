@@ -11,6 +11,8 @@ class Kohonen(object):
         self.width = width
         self.height = height
         self.outputs = outputs
+        self.freq = [1.0/self.outputs for i in range(self.outputs)]
+        self.beta = 0.1
 
     def initialize(self):
         random.seed()
@@ -26,7 +28,19 @@ class Kohonen(object):
         for k in range(self.outputs):
             for j in range(self.height):
                 for i in range(self.width):
+                    #print self.G(win,k)
                     self.weights[k][j][i] += self.alfa*self.G(win, k)*(pict[j][i]-self.weights[k][j][i])
+
+    def adjust_dist(self, dist, k):
+        bias = self.outputs * self.freq[k] - 1
+        return dist + bias
+
+    def update_freqs(self, win):
+        for k in range(self.outputs):
+            if k == win:
+                self.freq[k] += self.beta*(1.0 - self.freq[k])
+            else:
+                self.freq[k] += self.beta*(0.0 - self.freq[k])
 
     def winner(self, pict):
         min_dist = float('infinity')
@@ -37,8 +51,9 @@ class Kohonen(object):
                 for i in range(self.width):
                     s += (w[j][i] - pict[j][i])**2
             dist = math.sqrt(s)
-            if dist < min_dist:
-                min_dist = dist
+            adj_dist = self.adjust_dist(dist, k)
+            if adj_dist < min_dist:
+                min_dist = adj_dist
                 min_dist_ind = k
         return min_dist_ind
 
@@ -51,6 +66,7 @@ class Kohonen(object):
             for e in range(epochs/4):
                 for pict in X:
                     win = self.winner(pict)
+                    self.update_freqs(win)
                     self.update_weights(pict, win)
             self.alfa /= 2
             self.r -= 2
