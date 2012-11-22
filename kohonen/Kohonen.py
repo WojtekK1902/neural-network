@@ -20,9 +20,7 @@ class Kohonen(object):
     #obliczanie odleglosci
     #na razie tylko dla 1D
     def G(self, win, k):
-        if abs(win-k) <= self.r:
-            return 1.0
-        return 0.0
+        return math.exp(-(win-k)**2/(2*(self.r)**2))
 
     def update_weights(self, pict, win):
         for k in range(self.outputs):

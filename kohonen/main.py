@@ -1,4 +1,9 @@
 from Kohonen import Kohonen
+import sys
+
+if len(sys.argv) < 2:
+    print 'Brakuje pliku treningowego :('
+    sys.exit(1)
 
 k = Kohonen()
 
