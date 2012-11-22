@@ -2,15 +2,17 @@ import random
 import math
 
 class Kohonen(object):
-    def __init__(self, conf):
+    def __init__(self, width=3, height=3, outputs=4):
         #TODO: dodac bias!
-        self.alfa = conf.alfa
-        self.r = conf.r
-        self.width = conf.width
-        self.height = conf.height
-        self.outputs = conf.outputs
+        #TODO: ewentualnie ustawianie alfa
+        self.alfa = 0.06
+        #TODO: dodac ustawianie promienia sasiedztwa
+        self.r = 1
+        self.width = width
+        self.height = height
+        self.outputs = outputs
         self.freq = [1.0/self.outputs for i in range(self.outputs)]
-        self.beta = conf.beta
+        self.beta = 0.1
 
     def initialize(self):
         random.seed()
@@ -20,7 +22,10 @@ class Kohonen(object):
     #obliczanie odleglosci
     #na razie tylko dla 1D
     def G(self, win, k):
-        return math.exp(-(win-k)**2/(2*(self.r)**2))
+        #return math.exp(-(win-k)**2/(2*(self.r)**2))
+        if abs(win-k) < self.r:
+            return 1.0
+        return 0.0
 
     def update_weights(self, pict, win):
         for k in range(self.outputs):
@@ -67,13 +72,15 @@ class Kohonen(object):
                     self.update_freqs(win)
                     self.update_weights(pict, win)
             self.alfa /= 2
-            self.r -= 2
+            #self.r -= 2
         self.print_network()
 
     def print_network(self):
         for k in range(self.outputs):
             print
             for j in range(self.height):
+                wagi = ''
                 for i in range(self.width):
-                    print self.weights[k][j][i]
+                    wagi += str(self.weights[k][j][i]) + ' '
+                print wagi
                 print
