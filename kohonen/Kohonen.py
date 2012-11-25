@@ -3,14 +3,17 @@ import math
 
 class Kohonen(object):
     def __init__(self, conf):
-        #TODO: dodac bias!
         self.alfa = conf.alfa
         self.r = conf.r
         self.width = conf.width
         self.height = conf.height
-        self.outputs = conf.outputs
+        self.output_width = conf.output_width
+        self.output_height = conf.output_height
+        self.outputs = self.output_width * self.output_height
         self.freq = [1.0/self.outputs for i in range(self.outputs)]
         self.beta = conf.beta
+        self.neighbourhood = conf.neighbourhood
+        self.conscience = conf.conscience
 
     def initialize(self):
         random.seed()
@@ -18,19 +21,27 @@ class Kohonen(object):
         self.print_network()
 
     #obliczanie odleglosci
-    #na razie tylko dla 1D
+    #optymalizacja?
     def G(self, win, k):
-        #return math.exp(-(win-k)**2/(2*(self.r)**2))
-        if abs(win-k) < self.r:
+        win_x = win % self.output_width
+        win_y = win/self.output_width
+        k_x = k % self.output_width
+        k_y = k/self.output_width
+
+        if math.sqrt((win_x - k_x)**2 + (win_y-k_y)**2) < self.r:
             return 1.0
         return 0.0
 
     def update_weights(self, pict, win):
-        for k in range(self.outputs):
+        if self.neighbourhood == True:
+            for k in range(self.outputs):
+                for j in range(self.height):
+                    for i in range(self.width):
+                        self.weights[k][j][i] += self.alfa*self.G(win, k)*(pict[j][i]-self.weights[k][j][i])
+        else:
             for j in range(self.height):
-                for i in range(self.width):
-                    #print self.G(win,k)
-                    self.weights[k][j][i] += self.alfa*self.G(win, k)*(pict[j][i]-self.weights[k][j][i])
+               for i in range(self.width):
+                   self.weights[win][j][i] += self.alfa*(pict[j][i]-self.weights[win][j][i])
 
     def adjust_dist(self, dist, k):
         bias = self.outputs * self.freq[k] - 1
@@ -52,14 +63,14 @@ class Kohonen(object):
                 for i in range(self.width):
                     s += (w[j][i] - pict[j][i])**2
             dist = math.sqrt(s)
-            adj_dist = self.adjust_dist(dist, k)
-            if adj_dist < min_dist:
-                min_dist = adj_dist
+            if self.conscience == True:
+                dist = self.adjust_dist(dist, k)
+            if dist < min_dist:
+                min_dist = dist
                 min_dist_ind = k
         return min_dist_ind
 
     #TODO: czy liczba epok nie powinna byc konfigurowalna?
-    #TODO: czy przedzialy w ktorych alfa jest stale nie powinny byc konfigurowalne?
     def learn(self, X, epochs=32000):
         for i in range(4):
             print 'alfa =', self.alfa
@@ -67,11 +78,16 @@ class Kohonen(object):
             for e in range(epochs/4):
                 for pict in X:
                     win = self.winner(pict)
-                    self.update_freqs(win)
+                    if self.conscience == True:
+                        self.update_freqs(win)
                     self.update_weights(pict, win)
             self.alfa /= 2
             #self.r -= 2
         self.print_network()
+
+    #czy podczas uczenia tez uzywamy biasu z czestotliwoscia?
+    def run(self, pict):
+        return self.winner(pict)
 
     def print_network(self):
         for k in range(self.outputs):

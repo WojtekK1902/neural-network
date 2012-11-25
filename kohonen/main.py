@@ -6,7 +6,7 @@ if len(sys.argv) < 3:
     print 'Zbyt mało argumentów'
     sys.exit(1)
 
-exec("from kohonen import "+ sys.argv[2] + " as conf")
+exec("import "+ sys.argv[2] + " as conf")
 
 k = Kohonen(conf)
 
@@ -27,3 +27,5 @@ X.append(w)
 print X
 f.close()
 k.learn(X)
+pict = [[0, 0, 1], [0, 1, 1], [0, 0, 1]]
+print k.run(pict)

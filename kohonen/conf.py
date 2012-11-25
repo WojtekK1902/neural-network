@@ -1,6 +1,10 @@
 width = 3
 height = 3
-outputs = 4
+output_width = 4
+output_height = 1
 alfa = 0.06
-r = 7
+r = 1
 beta = 0.1
+epochs = 32000
+neighbourhood = True
+conscience = True
