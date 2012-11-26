@@ -2,11 +2,11 @@
 from Kohonen import Kohonen
 import sys
 
-if len(sys.argv) < 3:
-    print 'Zbyt mało argumentów'
+if len(sys.argv) < 4:
+    print 'usage: python main.py training_file test_file conf_file'
     sys.exit(1)
 
-exec("import "+ sys.argv[2] + " as conf")
+exec("import "+ sys.argv[3] + " as conf")
 
 k = Kohonen(conf)
 
@@ -27,5 +27,13 @@ X.append(w)
 print X
 f.close()
 k.learn(X)
-pict = [[0, 0, 1], [0, 1, 1], [0, 0, 1]]
+
+
+f = open(sys.argv[2], 'r')
+pict = []
+for line in f:
+    l = line.strip().split()
+    l[0] = l[0].strip('&')
+    pict.append(map(float, l))
+print pict
 print k.run(pict)
