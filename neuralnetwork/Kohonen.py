@@ -6,7 +6,6 @@ class Kohonen(Layer):
     def __init__(self, conf_file):
         super(Kohonen, self).__init__()
         exec("import "+ conf_file + " as conf")
-        self.weights = []
         self.alfa = conf.alfa
         self.r = conf.r
         self.output_width = conf.output_width

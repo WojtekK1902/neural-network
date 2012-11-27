@@ -1,7 +1,7 @@
 import sys
 from neuralnetwork.Network import Network
 from neuralnetwork.FileFormatException import FileFormatException
-from NetworkCreator import NetworkCreator
+from helpers.NetworkCreator import NetworkCreator
 
 
 if __name__ == '__main__':
