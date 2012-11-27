@@ -20,7 +20,6 @@ class Network(object):
                     neuron.input += layer.bias[i]
             self.layers[layer_index + 1].compute_input(layer.neurons)
             
-
         return map(lambda n: n.compute_output(), self.layers[-1].neurons)
 
     def read_training_file(self):
@@ -44,7 +43,6 @@ class Network(object):
 
     def learn(self):
         X = self.read_training_file()
-        print X
 
         for k in range(4):
             for e in range(self.epochs/4):
@@ -52,9 +50,10 @@ class Network(object):
                     self.compute(vec)
                     for i, layer in enumerate(self.layers[1:]):
                         new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], [n.compute_output() for n in self.layers[i].neurons])
-                        new_weights = [list(el) for el in zip(*new_weights)]
-                        for j, n in enumerate(self.layers[i].neurons):
-                            n.weights = new_weights[j]
+                        if new_weights != None and len(new_weights) > 0:
+                            new_weights = [list(el) for el in zip(*new_weights)]
+                            for j, n in enumerate(self.layers[i].neurons):
+                                n.weights = new_weights[j]
                         self.clear_network()
             for layer in self.layers:
                 layer.update_parameters()
@@ -62,7 +61,14 @@ class Network(object):
     def print_network(self):
         for i, layer in enumerate(self.layers[1:]):
             print
-            print 'Warstwy' + str(i+1) + '-' + str(i+2) + ':'
+            print 'Warstwy ' + str(i+1) + '-' + str(i+2) + ':'
+            bias_str = '\tBias:\t'
+            if len(self.layers[i].bias) == 0:
+                bias_str += '0.0'
+            else:
+                for b in self.layers[i].bias:
+                    bias_str += '%.3f ' % b
+            print bias_str
             layer.print_layer(self.layers[i].neurons)
             
         

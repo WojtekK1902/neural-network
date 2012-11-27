@@ -21,7 +21,6 @@ class Kohonen(object):
         self.print_network()
 
     #obliczanie odleglosci
-    #optymalizacja?
     def G(self, win, k):
         win_x = win % self.output_width
         win_y = win/self.output_width
@@ -70,7 +69,6 @@ class Kohonen(object):
                 min_dist_ind = k
         return min_dist_ind
 
-    #TODO: czy liczba epok nie powinna byc konfigurowalna?
     def learn(self, X, epochs=32000):
         for i in range(4):
             print 'alfa =', self.alfa
@@ -85,7 +83,6 @@ class Kohonen(object):
             #self.r -= 2
         self.print_network()
 
-    #czy podczas uczenia tez uzywamy biasu z czestotliwoscia?
     def run(self, pict):
         return self.winner(pict)
 

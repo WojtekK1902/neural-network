@@ -3,14 +3,12 @@ import math
 from neuralnetwork.Layer import Layer
 
 class Kohonen(Layer):
-    def __init__(self, conf_file, inputs):
+    def __init__(self, conf_file):
         super(Kohonen, self).__init__()
         exec("import "+ conf_file + " as conf")
         self.weights = []
-        self.epochs = conf.epochs
         self.alfa = conf.alfa
         self.r = conf.r
-        self.inputs = inputs
         self.output_width = conf.output_width
         self.output_height = conf.output_height
         self.outputs = self.output_width * self.output_height
@@ -18,7 +16,6 @@ class Kohonen(Layer):
         self.beta = conf.beta
         self.neighbourhood = conf.neighbourhood
         self.conscience = conf.conscience
-        print 'Kohonen', self.inputs
 
     #obliczanie odleglosci
     def G(self, win, k):
@@ -72,7 +69,6 @@ class Kohonen(Layer):
                 min_dist_ind = k
         return min_dist_ind
 
-    #TODO: czy liczba epok nie powinna byc konfigurowalna?
     def learn(self, weights, vec):
         win = self.winner(vec, weights)
         if self.conscience == True:
@@ -86,4 +82,11 @@ class Kohonen(Layer):
         self.neurons[self.winner(vec, weights)].input = 1.0
 
     def print_layer(self, prev_neurons):
-        print [list(el) for el in zip(*[n.weights for n in prev_neurons])]
+        w_str = '\tWagi:\t'
+        weights = [list(el) for el in zip(*[n.weights for n in prev_neurons])]
+        for w in weights:
+            for w_val in w:
+                w_str += '%.2f   ' % w_val
+            w_str += '\n\t\t'
+        print w_str
+            

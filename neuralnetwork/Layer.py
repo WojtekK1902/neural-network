@@ -3,7 +3,7 @@ class Layer(object):
         self.bias = []
         self.neurons = []
 
-    def learn(self, weights):
+    def learn(self, weights, vec):
         pass
 
     def update_parameters(self):
@@ -13,5 +13,9 @@ class Layer(object):
         raise Exception('Implement me!')
 
     def print_layer(self, prev_neurons):
-        for n in layer.prev_neurons:
-            print n.weights
+        n_str = '\tWagi:\t'
+        for n in prev_neurons:
+            for w in n.weights:
+                n_str += '%.3f   ' % w
+            n_str += '\n\t\t'
+        print n_str
