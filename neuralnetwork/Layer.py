@@ -3,10 +3,7 @@ class Layer(object):
         self.bias = []
         self.neurons = []
 
-    def learn(self, weights, vec):
-        pass
-
-    def update_parameters(self):
+    def learn(self, weights, vec, epoch):
         pass
 
     def compute_input(self, prev_neurons):

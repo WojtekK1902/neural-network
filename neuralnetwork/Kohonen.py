@@ -6,7 +6,7 @@ class Kohonen(Layer):
     def __init__(self, conf_file):
         super(Kohonen, self).__init__()
         exec("import "+ conf_file + " as conf")
-        self.alfa = conf.alfa
+        self.alfas = conf.alfas
         self.r = conf.r
         self.output_width = conf.output_width
         self.output_height = conf.output_height
@@ -15,6 +15,7 @@ class Kohonen(Layer):
         self.beta = conf.beta
         self.neighbourhood = conf.neighbourhood
         self.conscience = conf.conscience
+        self.current_stage = 0
 
     #obliczanie odleglosci
     def G(self, win, k):
@@ -27,18 +28,14 @@ class Kohonen(Layer):
             return 1.0
         return 0.0
 
-    def update_parameters(self):
-        print 'alfa =', self.alfa
-        self.alfa /= 2
-
     def update_weights(self, vec, win, weights):
         if self.neighbourhood == True:
             for k, w in enumerate(weights):
                 for i in range(len(w)):
-                        weights[k][i] += self.alfa*self.G(win, k)*(vec[i]-weights[k][i])
+                        weights[k][i] += self.alfas[self.current_stage][1]*self.G(win, k)*(vec[i]-weights[k][i])
         else:
             for i in range(len(weights[win])):
-                   weights[win][i] += self.alfa*(vec[i]-weights[win][i])
+                   weights[win][i] += self.alfas[self.current_stage][1]*(vec[i]-weights[win][i])
                    
         return weights
 
@@ -68,7 +65,12 @@ class Kohonen(Layer):
                 min_dist_ind = k
         return min_dist_ind
 
-    def learn(self, weights, vec):
+    def learn(self, weights, vec, epoch):
+        if epoch > self.alfas[self.current_stage][0]:
+            info = 'alfa = ' + str(self.alfas[self.current_stage][1])
+            self.current_stage += 1
+            info += ' => alfa = ' + str(self.alfas[self.current_stage][1])
+            print info
         win = self.winner(vec, weights)
         if self.conscience == True:
             self.update_freqs(win)

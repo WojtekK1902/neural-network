@@ -6,3 +6,7 @@ r = 1
 beta = 0.1
 neighbourhood = True
 conscience = True
+
+#Grossberg parameters
+learning_rate = 0.15
+outputs = 3

@@ -6,8 +6,8 @@ class Grossberg(Layer):
     def __init__(self, conf_file):
         super(Grossberg, self).__init__()
         exec("import "+ conf_file + " as conf")
-        #self.alfa = conf.alfa
-        #self.outputs = self.output_width * self.output_height
+        self.learning_rate = conf.learning_rate
+        self.outputs = conf.outputs
 
 ##TODO
 ##    def update_parameters(self):

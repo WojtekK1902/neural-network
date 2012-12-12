@@ -44,19 +44,16 @@ class Network(object):
     def learn(self):
         X = self.read_training_file()
 
-        for k in range(4):
-            for e in range(self.epochs/4):
-                for vec in X:
-                    self.compute(vec)
-                    for i, layer in enumerate(self.layers[1:]):
-                        new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], [n.compute_output() for n in self.layers[i].neurons])
-                        if new_weights != None and len(new_weights) > 0:
-                            new_weights = [list(el) for el in zip(*new_weights)]
-                            for j, n in enumerate(self.layers[i].neurons):
-                                n.weights = new_weights[j]
-                        self.clear_network()
-            for layer in self.layers:
-                layer.update_parameters()
+        for e in range(self.epochs):
+            for vec in X:
+                self.compute(vec)
+                for i, layer in enumerate(self.layers[1:]):
+                    new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], [n.compute_output() for n in self.layers[i].neurons], e)
+                    if new_weights != None and len(new_weights) > 0:
+                        new_weights = [list(el) for el in zip(*new_weights)]
+                        for j, n in enumerate(self.layers[i].neurons):
+                            n.weights = new_weights[j]
+                    self.clear_network()
 
     def print_network(self):
         for i, layer in enumerate(self.layers[1:]):
