@@ -9,6 +9,7 @@ class Network(object):
         self.layers = []
         self.epochs = 0
         self.trainig_file = None
+        self.koh_gros_conf = None
 
     def compute(self, input):
         for x, neuron in zip(input, self.layers[0].neurons):
@@ -24,17 +25,23 @@ class Network(object):
 
     def read_training_file(self):
         f = open(self.training_file, 'r')
-        X, w = [], []
+        X, w, teachers = [], [], []
+        prev = []
         for line in f:
+            if line[0] == '!':
+                continue
             l = line.strip().split()
+            if len(prev) > 0 and len(l) > len(prev):
+                teachers.append(l[len(l)/2:])
             if len(l[0].split('&')) == 1:
                 if len(w) > 0:
                     X.append(w)
                 w = []
             l[0] = l[0].strip('&')
             w.extend(map(float, l))
+            prev = l
         X.append(w)
-        return X
+        return [X, [map(int, l) for l in teachers]]
 
     def clear_network(self):
         for layer in self.layers:
@@ -42,7 +49,8 @@ class Network(object):
                 neuron.input = 0
 
     def learn(self):
-        X = self.read_training_file()
+        [X, teachers] = self.read_training_file()
+        print teachers
 
         for e in range(self.epochs):
             for vec in X:

@@ -1,6 +1,6 @@
 #Kohonen parameters
-output_width = 4
-output_height = 1
+output_width = 3
+output_height = 3
 alfas = [(8000, 0.06), (16000, 0.03), (24000, 0.015), (32000, 0.0075)]
 r = 1
 beta = 0.1
