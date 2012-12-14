@@ -122,6 +122,7 @@ class NetworkCreator(object):
             func = types.MethodType(liniowa, neuron)
         elif l == 'gros':
             layer = Grossberg(network.koh_gros_conf)
+            l = f.readline().strip().split()
             func = types.MethodType(FUNCTIONS[l[-1]], neuron)
         else:
             layer = StandardLayer()

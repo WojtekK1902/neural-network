@@ -50,7 +50,7 @@ class Kohonen(Layer):
             else:
                 self.freq[k] += self.beta*(0.0 - self.freq[k])
 
-    def winner(self, vec, weights):
+    def winner(self, vec, weights, run=False):
         min_dist = float('infinity')
         min_dist_ind = -1
         for k, w in enumerate(weights):
@@ -58,16 +58,16 @@ class Kohonen(Layer):
             for val_w, val_vec in zip(w, vec):
                 s += (val_w - val_vec)**2
             dist = math.sqrt(s)
-            if self.conscience == True:
+            if run == False and self.conscience == True:
                 dist = self.adjust_dist(dist, k)
             if dist < min_dist:
                 min_dist = dist
                 min_dist_ind = k
         return min_dist_ind
 
-    def learn(self, weights, vec, epoch):
+    def learn(self, weights, epoch, vec, teacher=None, winner=None):
         if epoch > self.alfas[self.current_stage][0]:
-            info = 'alfa = ' + str(self.alfas[self.current_stage][1])
+            info = 'Kohonen: alfa = ' + str(self.alfas[self.current_stage][1])
             self.current_stage += 1
             info += ' => alfa = ' + str(self.alfas[self.current_stage][1])
             print info
@@ -75,12 +75,12 @@ class Kohonen(Layer):
         if self.conscience == True:
             self.update_freqs(win)
         weights = self.update_weights(vec, win, weights)
-        return weights
+        return [weights, win]
 
     def compute_input(self, prev_neurons):
         weights = [list(el) for el in zip(*[n.weights for n in prev_neurons])]
         vec = [n.compute_output() for n in prev_neurons]
-        self.neurons[self.winner(vec, weights)].input = 1.0
+        self.neurons[self.winner(vec, weights, True)].input = 1.0
 
     def print_layer(self, prev_neurons):
         w_str = '\tWagi:\t'

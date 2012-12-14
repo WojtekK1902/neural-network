@@ -1,4 +1,5 @@
 from Kohonen import Kohonen
+from Grossberg import Grossberg
 from neuralnetwork.Layer import Layer
 
 class Network(object):
@@ -41,7 +42,7 @@ class Network(object):
             w.extend(map(float, l))
             prev = l
         X.append(w)
-        return [X, [map(int, l) for l in teachers]]
+        return [X, [map(float, l) for l in teachers]]
 
     def clear_network(self):
         for layer in self.layers:
@@ -50,18 +51,20 @@ class Network(object):
 
     def learn(self):
         [X, teachers] = self.read_training_file()
-        print teachers
 
         for e in range(self.epochs):
-            for vec in X:
+            for vec_i, vec in enumerate(X):
                 self.compute(vec)
                 for i, layer in enumerate(self.layers[1:]):
-                    new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], [n.compute_output() for n in self.layers[i].neurons], e)
+                    if isinstance(layer, Kohonen):
+                        [new_weights, winner] = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, [n.compute_output() for n in self.layers[i].neurons])
+                    elif isinstance(layer, Grossberg):
+                        new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, teachers[vec_i], winner)
                     if new_weights != None and len(new_weights) > 0:
                         new_weights = [list(el) for el in zip(*new_weights)]
                         for j, n in enumerate(self.layers[i].neurons):
                             n.weights = new_weights[j]
-                    self.clear_network()
+                self.clear_network()
 
     def print_network(self):
         for i, layer in enumerate(self.layers[1:]):
