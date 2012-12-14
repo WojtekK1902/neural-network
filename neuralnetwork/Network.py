@@ -27,20 +27,19 @@ class Network(object):
     def read_training_file(self):
         f = open(self.training_file, 'r')
         X, w, teachers = [], [], []
-        prev = []
         for line in f:
             if line[0] == '!':
                 continue
             l = line.strip().split()
-            if len(l) > len(self.layers[0].neurons):
-                teachers.append(l[len(self.layers[0].neurons):])
             if len(l[0].split('&')) == 1:
                 if len(w) > 0:
                     X.append(w)
                 w = []
             l[0] = l[0].strip('&')
             w.extend(map(float, l))
-            prev = l
+            if len(w) > len(self.layers[0].neurons):
+                teachers.append(w[len(self.layers[0].neurons):])
+                w = w[:len(self.layers[0].neurons)]
         X.append(w)
         return [X, [map(float, l) for l in teachers]]
 

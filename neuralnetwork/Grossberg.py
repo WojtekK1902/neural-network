@@ -1,5 +1,6 @@
 import random
 import math
+import types
 from neuralnetwork.Layer import Layer
 
 class Grossberg(Layer):
@@ -9,8 +10,9 @@ class Grossberg(Layer):
         self.learning_rates = conf.learning_rates
         self.outputs = conf.outputs
         self.current_stage = 0
+        self.learn = getattr(self, conf.learning_rule)
 
-    def learn(self, weights, epoch, teacher, winner, vec = None):
+    def WidrowHoff(self, weights, epoch, teacher, winner, vec = None):
         if epoch > self.learning_rates[self.current_stage][0]:
             info = 'Grossberg: learning_rate = ' + str(self.learning_rates[self.current_stage][1])
             self.current_stage += 1

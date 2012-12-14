@@ -10,3 +10,4 @@ conscience = True
 #Grossberg parameters
 learning_rates = [(2000, 0.0), (12000, 0.15)]
 outputs = 3
+learning_rule = 'WidrowHoff'
