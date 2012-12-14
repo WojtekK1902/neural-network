@@ -32,8 +32,8 @@ class Network(object):
             if line[0] == '!':
                 continue
             l = line.strip().split()
-            if len(prev) > 0 and len(l) > len(prev):
-                teachers.append(l[len(l)/2:])
+            if len(l) > len(self.layers[0].neurons):
+                teachers.append(l[len(self.layers[0].neurons):])
             if len(l[0].split('&')) == 1:
                 if len(w) > 0:
                     X.append(w)
