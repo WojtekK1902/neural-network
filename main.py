@@ -45,14 +45,28 @@ if __name__ == '__main__':
 
         network.print_network()
 
+        if network.epochs != 0:
+            network.learn()
+            network.print_network()
+
         inputs = []
         print
+        q = False
 
         if len(sys.argv) < 3:
-            input = []
-            for i in range(network.inputs):
-                input.append(float(raw_input('Input ' + str(i+1) + ': ')))
-            inputs.append(input)
+            while q == False:
+                input = []
+                for i in range(network.inputs):
+                    input.append(float(raw_input('Input ' + str(i+1) + ': ')))
+                print 'input =', input
+                output = network.compute(input)
+                print 'Odpowiedz sieci: ', ['%.4f' % o for o in output]
+                network.clear_network()
+                print
+                print 'Jesli chcesz zakonczyc, nacisnij \'q\', jesli kontynuowac, nacisnij dowolny inny klawisz!'
+                key = raw_input('Wybor: ')
+                if key == 'q':
+                    q = True
         else:
             f = open(sys.argv[2], 'r')
             input = []
@@ -64,16 +78,12 @@ if __name__ == '__main__':
                     inputs.append(input)
                     input = []
             f.close()
-
-        if network.epochs != 0:
-            network.learn()
-            network.print_network()
-
-        for i in inputs:
-            print 'input =', i
-            output = network.compute(i)
-            print 'Odpowiedz sieci: ', ['%.4f' % o for o in output]
-            network.clear_network()
+            for i in inputs:
+                print 'input =', i
+                output = network.compute(i)
+                print 'Odpowiedz sieci: ', ['%.4f' % o for o in output]
+                network.clear_network()
+                print
         
     except FileFormatException as e:
         print 'Bad file format at position:', e.pos
