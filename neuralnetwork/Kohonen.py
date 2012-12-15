@@ -15,7 +15,6 @@ class Kohonen(Layer):
         self.beta = conf.beta
         self.neighbourhood = conf.neighbourhood
         self.conscience = conf.conscience
-        self.current_stage = 0
 
     #obliczanie odleglosci
     def G(self, win, k):

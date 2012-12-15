@@ -34,7 +34,8 @@ def sigmoida_der(self, x):
     return math.e**(-x)/(1+math.e**(-x))**2
 
 
-FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida  }
+FUNCTIONS = {"l": liniowa, "p": progowa, "s" : sigmoida}
+DER_FUNCTIONS = {"l": liniowa_der, "p": progowa_der, "s" : sigmoida_der}
 
 class NetworkCreator(object):
 
@@ -50,15 +51,6 @@ class NetworkCreator(object):
                 for i in range(count):
                     weights.append(random.uniform(lower_bound, upper_bound))
         return weights
-
-    def set_derivative(self, fun, neuron):
-        if fun == 'l':
-            deriv = types.MethodType(liniowa_der, neuron)
-        elif fun == 'p':
-            deriv = types.MethodType(progowa_der, neuron)
-        else:
-            deriv = types.MethodType(sigmoida_der, neuron)
-        return deriv
 
     def create_input_layer(self, network, f):
         l = f.readline().strip()
@@ -104,7 +96,7 @@ class NetworkCreator(object):
                 layer = Grossberg(network.koh_gros_conf)
                 l = f.readline().strip().split()
                 func = types.MethodType(FUNCTIONS[l[-1]], neuron)
-                deriv = self.set_derivative(l[-1], neuron)
+                deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)
             else:
                 layer = StandardLayer()
                 func = types.MethodType(FUNCTIONS[l[-1]], neuron)
@@ -146,7 +138,7 @@ class NetworkCreator(object):
             layer = Grossberg(network.koh_gros_conf)
             l = f.readline().strip().split()
             func = types.MethodType(FUNCTIONS[l[-1]], neuron)
-            deriv = self.set_derivative(l[-1], neuron)
+            deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)
         else:
             layer = StandardLayer()
             func = types.MethodType(FUNCTIONS[l], neuron)

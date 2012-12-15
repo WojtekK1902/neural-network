@@ -8,8 +8,6 @@ class Grossberg(Layer):
         super(Grossberg, self).__init__()
         exec("import "+ conf_file + " as conf")
         self.learning_rates = conf.learning_rates
-        self.outputs = conf.outputs
-        self.current_stage = 0
         self.learn = getattr(self, conf.learning_rule)
 
     def update_learning_rate(self, epoch):

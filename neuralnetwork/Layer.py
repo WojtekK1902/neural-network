@@ -2,6 +2,7 @@ class Layer(object):
     def __init__(self):
         self.bias = []
         self.neurons = []
+        self.current_stage = 0
 
     def learn(self, weights, epoch, vec, teacher, winner):
         pass
