@@ -45,29 +45,35 @@ if __name__ == '__main__':
 
         network.print_network()
 
-        input = []
+        inputs = []
         print
 
         if len(sys.argv) < 3:
+            input = []
             for i in range(network.inputs):
                 input.append(float(raw_input('Input ' + str(i+1) + ': ')))
+            inputs.append(input)
         else:
             f = open(sys.argv[2], 'r')
+            input = []
             for line in f:
                 l = line.strip().split()
                 l[0] = l[0].strip('&')
                 input.extend(map(float, l))
+                if len(input) == network.inputs:
+                    inputs.append(input)
+                    input = []
             f.close()
-            
-        print 'input =', input
 
         if network.epochs != 0:
             network.learn()
             network.print_network()
 
-        output = network.compute(input)
-
-        print 'Odpowiedz sieci: ', ['%.4f' % o for o in output]
+        for i in inputs:
+            print 'input =', i
+            output = network.compute(i)
+            print 'Odpowiedz sieci: ', ['%.4f' % o for o in output]
+            network.clear_network()
         
     except FileFormatException as e:
         print 'Bad file format at position:', e.pos
