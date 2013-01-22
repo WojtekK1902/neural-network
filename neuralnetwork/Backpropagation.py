@@ -30,6 +30,12 @@ class Backpropagation(Layer):
                 old_weight = weights[i][j]
                 weights[i][j] +=  self.learning_rates[self.current_stage][1] * deltas[i] * self.neurons[j].compute_output() + self.momenta[self.current_stage][1] * self.prev_change[j][i]
                 self.prev_change[j][i] = weights[i][j] - old_weight
+
+        for i in range(len(self.bias)):
+            old_bias = self.bias[i]
+            self.bias[i] += self.learning_rates[self.current_stage][1] * deltas[i] + self.momenta[self.current_stage][1] * self.prev_bias_change[i]
+            self.prev_bias_change[i] = self.bias[i] - old_bias
+            
         return weights
 
     def print_layer(self, prev_neurons):
@@ -39,5 +45,7 @@ class Backpropagation(Layer):
             for w_val in w:
                 w_str += '%.2f   ' % w_val
             w_str += '\n\t\t'
+        #for n in self.neurons:
+        #    print 'Delta:', n.delta
         print w_str
             

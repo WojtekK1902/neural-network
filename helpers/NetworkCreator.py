@@ -66,10 +66,10 @@ class NetworkCreator(object):
                 raise FileFormatException(f.tell())
             layer = Backpropagation(conf_file)
             network.conf_file = conf_file
-            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:-1]))
+            layer.bias = map(lambda x: x*(-1.0), self.read_weights(l[1:-1]))
         else:
             layer = StandardLayer()
-            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:]))
+            layer.bias = map(lambda x: x*(-1.0), self.read_weights(l[1:]))
         network.layers.append(layer)
         for i in range(network.inputs):
             neuron = Neuron()
@@ -82,6 +82,7 @@ class NetworkCreator(object):
             network.layers[-1].neurons.append(neuron)
         if isinstance(layer, Backpropagation):
             layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
+            layer.prev_bias_change = [0.0 for b in layer.bias]
 
         return network
 
@@ -120,7 +121,7 @@ class NetworkCreator(object):
             else:
                 layer = StandardLayer()
                 func = types.MethodType(FUNCTIONS[l[-1]], neuron)
-            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:-1]))
+            layer.bias = map(lambda x: x*(-1.0), self.read_weights(l[1:-1]))
             network.layers.append(layer)
             neurons_count = 0
             for j in range(network.hidden[i]):
@@ -138,6 +139,7 @@ class NetworkCreator(object):
                 network.layers[-1].neurons.append(neuron)
             if isinstance(layer, Backpropagation):
                 layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
+                layer.prev_bias_change = [0.0 for b in layer.bias]
                 
         return network
 
@@ -177,5 +179,6 @@ class NetworkCreator(object):
             network.layers[-1].neurons.append(neuron)
         if isinstance(layer, Backpropagation):
             layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
+            layer.prev_bias_change = [0.0 for b in layer.bias]
             
         return network
