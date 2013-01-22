@@ -13,3 +13,4 @@ learning_rule = 'WidrowHoff'
 
 #Backpropagation parameters
 bp_learning_rates = [(10000, 0.9), (999999, 0.0)]
+momenta = [(10000, 0.6), (999999, 0.0)]

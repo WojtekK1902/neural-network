@@ -8,6 +8,8 @@ class Backpropagation(Layer):
         super(Backpropagation, self).__init__()
         exec("import "+ conf_file + " as conf")
         self.learning_rates = conf.bp_learning_rates
+        self.momenta = conf.momenta
+        self.prev_change = []
 
     def update_learning_rate(self, epoch):
         if epoch > self.learning_rates[self.current_stage][0]:
@@ -22,9 +24,12 @@ class Backpropagation(Layer):
                 self.neurons[index].input += weight * neuron.compute_output()
 
     def learn(self, weights, epoch, teachers, deltas, vec=None, winner=None):
+        self.update_learning_rate(epoch)
         for i in range(len(weights)):
             for j in range(len(weights[i])):
-                weights[i][j] +=  self.learning_rates[self.current_stage][1] * deltas[i] * self.neurons[j].compute_output()
+                old_weight = weights[i][j]
+                weights[i][j] +=  self.learning_rates[self.current_stage][1] * deltas[i] * self.neurons[j].compute_output() + self.momenta[self.current_stage][1] * self.prev_change[j][i]
+                self.prev_change[j][i] = weights[i][j] - old_weight
         return weights
 
     def print_layer(self, prev_neurons):

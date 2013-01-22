@@ -80,6 +80,8 @@ class NetworkCreator(object):
                 raise FileFormatException(f.tell())
             neuron.weights = self.read_weights(l)
             network.layers[-1].neurons.append(neuron)
+        if isinstance(layer, Backpropagation):
+            layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
 
         return network
 
@@ -134,6 +136,8 @@ class NetworkCreator(object):
                 neuron.der = deriv
                 neuron.weights = self.read_weights(line)
                 network.layers[-1].neurons.append(neuron)
+            if isinstance(layer, Backpropagation):
+                layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
                 
         return network
 
@@ -171,5 +175,7 @@ class NetworkCreator(object):
             neuron.f = func
             neuron.der = deriv
             network.layers[-1].neurons.append(neuron)
+        if isinstance(layer, Backpropagation):
+            layer.prev_change = [[0.0 for w in n.weights] for n in layer.neurons]
             
         return network
