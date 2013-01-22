@@ -4,6 +4,7 @@ class Neuron(object):
         self.f = None
         self.der = None
         self.input = 0.0
+        self.delta = 0.0
 
     def compute_output(self):
         return self.f(self.input)

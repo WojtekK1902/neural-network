@@ -4,7 +4,7 @@ class Layer(object):
         self.neurons = []
         self.current_stage = 0
 
-    def learn(self, weights, epoch, vec, teacher, winner):
+    def learn(self, weights, epoch, vec, teacher, winner, deltas):
         pass
 
     def compute_input(self, prev_neurons):

@@ -64,7 +64,7 @@ class Kohonen(Layer):
                 min_dist_ind = k
         return min_dist_ind
 
-    def learn(self, weights, epoch, vec, teacher=None, winner=None):
+    def learn(self, weights, epoch, vec, teacher=None, winner=None, deltas=None):
         if epoch > self.alfas[self.current_stage][0]:
             info = 'Kohonen: alfa = ' + str(self.alfas[self.current_stage][1])
             self.current_stage += 1

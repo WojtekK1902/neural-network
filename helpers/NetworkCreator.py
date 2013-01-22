@@ -9,6 +9,7 @@ from neuralnetwork.StandardLayer import StandardLayer
 from neuralnetwork.Network import Network
 from neuralnetwork.Kohonen import Kohonen
 from neuralnetwork.Grossberg import Grossberg
+from neuralnetwork.Backpropagation import Backpropagation
 from neuralnetwork.FileFormatException import FileFormatException
 
 
@@ -56,15 +57,24 @@ class NetworkCreator(object):
         l = f.readline().strip()
         if l:
             raise FileFormatException(f.tell())
-        layer = StandardLayer()
         l = f.readline().strip().split()
-        if l[0] != 'b':
+        if l[0] != 'b' or l[-1] != 'bp':
             raise FileFormatException(f.tell())
-        layer.bias = map(lambda x: x*(-1.0), map(float, l[1:]))
+        if l[-1] == 'bp':
+            conf_file = f.readline().strip()
+            if not conf_file:
+                raise FileFormatException(f.tell())
+            layer = Backpropagation(conf_file)
+            network.conf_file = conf_file
+            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:-1]))
+        else:
+            layer = StandardLayer()
+            layer.bias = map(lambda x: x*(-1.0), map(float, l[1:]))
         network.layers.append(layer)
         for i in range(network.inputs):
             neuron = Neuron()
             neuron.f = types.MethodType(liniowa, neuron)
+            neuron.der = types.MethodType(DER_FUNCTIONS["l"], neuron)
             l = f.readline().strip().split()
             if not l:
                 raise FileFormatException(f.tell())
@@ -79,7 +89,7 @@ class NetworkCreator(object):
             if l:
                 raise FileFormatException(f.tell())
             l = f.readline().strip().split()
-            if l[0] != 'b' or (l[-1] not in FUNCTIONS.keys() and (l[-1] != 'koh' and l[-1] != 'gros')):
+            if l[0] != 'b' or (l[-1] not in FUNCTIONS.keys() and (l[-1] != 'koh' and l[-1] != 'gros' and l[-1] != 'bp')):
                 raise FileFormatException(f.tell())
 
             layer = None
@@ -90,10 +100,18 @@ class NetworkCreator(object):
                 if not conf_file:
                     raise FileFormatException(f.tell())
                 layer = Kohonen(conf_file)
-                network.koh_gros_conf = conf_file
+                network.conf_file = conf_file
                 func = types.MethodType(liniowa, neuron)
             elif l[-1] == 'gros':
-                layer = Grossberg(network.koh_gros_conf)
+                layer = Grossberg(network.conf_file)
+                l = f.readline().strip().split()
+                func = types.MethodType(FUNCTIONS[l[-1]], neuron)
+                deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)
+            elif l[-1] == 'bp':
+                if network.conf_file == None:
+                    conf_file = f.readline().strip()
+                    network.conf_file = conf_file
+                layer = Backpropagation(network.conf_file)
                 l = f.readline().strip().split()
                 func = types.MethodType(FUNCTIONS[l[-1]], neuron)
                 deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)
@@ -121,7 +139,7 @@ class NetworkCreator(object):
 
     def create_output_layer(self, network, f):
         l = f.readline().strip()
-        if l not in FUNCTIONS.keys() and (l != 'koh' and l != 'gros'):
+        if l not in FUNCTIONS.keys() and (l != 'koh' and l != 'gros' and l!= 'bp'):
             raise FileFormatException(f.tell())
 
         layer = None
@@ -132,10 +150,15 @@ class NetworkCreator(object):
             if not conf_file:
                 raise FileFormatException(f.tell())
             layer = Kohonen(conf_file)
-            network.koh_gros_conf = conf_file
+            network.conf_file = conf_file
             func = types.MethodType(liniowa, neuron)
         elif l == 'gros':
-            layer = Grossberg(network.koh_gros_conf)
+            layer = Grossberg(network.conf_file)
+            l = f.readline().strip().split()
+            func = types.MethodType(FUNCTIONS[l[-1]], neuron)
+            deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)
+        elif l == 'bp':
+            layer = Backpropagation(network.conf_file)
             l = f.readline().strip().split()
             func = types.MethodType(FUNCTIONS[l[-1]], neuron)
             deriv = types.MethodType(DER_FUNCTIONS[l[-1]], neuron)

@@ -1,5 +1,6 @@
 from Kohonen import Kohonen
 from Grossberg import Grossberg
+from Backpropagation import Backpropagation
 from neuralnetwork.Layer import Layer
 
 class Network(object):
@@ -10,7 +11,7 @@ class Network(object):
         self.layers = []
         self.epochs = 0
         self.trainig_file = None
-        self.koh_gros_conf = None
+        self.conf_file = None
 
     def compute(self, input):
         for x, neuron in zip(input, self.layers[0].neurons):
@@ -54,16 +55,35 @@ class Network(object):
         for e in range(self.epochs):
             for vec_i, vec in enumerate(X):
                 self.compute(vec)
-                for i, layer in enumerate(self.layers[1:]):
+                self.compute_deltas(teachers[vec_i])
+                for i, layer in enumerate(self.layers):
                     if isinstance(layer, Kohonen):
                         [new_weights, winner] = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, [n.compute_output() for n in self.layers[i].neurons])
                     elif isinstance(layer, Grossberg):
                         new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, teachers[vec_i], winner)
+                    elif isinstance(layer, Backpropagation):
+                        deltas = None
+                        if i < len(self.layers) - 1:
+                            deltas = [n.delta for n in self.layers[i+1].neurons]
+                        new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, teachers[vec_i], deltas)
                     if new_weights != None and len(new_weights) > 0:
                         new_weights = [list(el) for el in zip(*new_weights)]
                         for j, n in enumerate(self.layers[i].neurons):
                             n.weights = new_weights[j]
                 self.clear_network()
+
+    def compute_deltas(self, teachers):
+        for i, n in enumerate(self.layers[-1].neurons):
+            n.delta = n.compute_deriv()*(teachers[i]-n.compute_output())
+        for i in range(len(self.layers)-2,0,-1):
+            epsilons = [0.0 for n in self.layers[i].neurons]
+            for k, n in enumerate(self.layers[i].neurons):
+                for j, n_next in enumerate(self.layers[i+1].neurons):
+                    epsilons[k] += n_next.delta * n.weights[j]
+
+            for k, n in enumerate(self.layers[i].neurons):
+                n.delta = epsilons[k] * n.compute_deriv()
+            
 
     def print_network(self):
         for i, layer in enumerate(self.layers[1:]):
