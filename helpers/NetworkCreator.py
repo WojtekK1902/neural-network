@@ -58,7 +58,7 @@ class NetworkCreator(object):
         if l:
             raise FileFormatException(f.tell())
         l = f.readline().strip().split()
-        if l[0] != 'b' or l[-1] != 'bp':
+        if l[0] != 'b' and l[-1] != 'bp':
             raise FileFormatException(f.tell())
         if l[-1] == 'bp':
             conf_file = f.readline().strip()
