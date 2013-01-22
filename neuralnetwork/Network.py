@@ -63,7 +63,7 @@ class Network(object):
                         new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, teachers[vec_i], winner)
                     elif isinstance(layer, Backpropagation):
                         deltas = None
-                        if i < len(self.layers) - 1:
+                        if i < len(self.layers) - 1: #nie ostatnia warstwa
                             deltas = [n.delta for n in self.layers[i+1].neurons]
                         new_weights = layer.learn([list(el) for el in zip(*[n.weights for n in self.layers[i].neurons])], e, teachers[vec_i], deltas)
                     if new_weights != None and len(new_weights) > 0:
